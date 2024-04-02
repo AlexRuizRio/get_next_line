@@ -15,6 +15,35 @@ static	size_t	ft_strlen(const char *s)
 	return (count);
 }
 
+static	char	*ft_strjoin(char const *s1, char const *s2)
+{
+	char	*str;
+	size_t	i;
+	size_t	len;
+
+	if (s1 == NULL || s2 == NULL)
+		return (NULL);
+	len = ft_strlen(s1)+ ft_strlen(s2);
+	str = ft_calloc((len + 1), sizeof(char));
+	if (!str)
+		return (0);
+	i = 0;
+	while (s1[i] != '\0')
+	{
+		str[i] = s1[i];
+		i++;
+	}
+	len = 0;
+	while (s2[len] != '\0')
+	{
+		str[i] = s2[len];
+		i++;
+		len++;
+	}
+	str[i] = '\0';
+	return (str);
+}
+
 static	char	*ft_strchr(const char *s, int c)
 {
 	while (*s != '\0')
@@ -56,9 +85,11 @@ char	*reading_file (int fd, char *str)
 			free(buffer);
 			return (NULL);
 		}
-		
+		buffer[bytes_read] = '\0';
+		str = ft_strjoin (str, buffer);
 	}
-
+	free(buffer);
+	return (str);
 }
 
 char	*get_next_line(int fd)
