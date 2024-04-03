@@ -74,7 +74,24 @@ char	*cleanline (char *str)
 
 char	*look_line	(char *str)
 {
+	char	*line;
+	int		i;
 
+	if (str == NULL)
+		return (NULL);
+	i = 0;
+	while (str[i] != '\n' && str[i] != '\0')
+		i++;
+	line = (char *)malloc(sizeof(char) * (i + 1));
+	if (line == NULL)
+		return (NULL);
+	i = 0;
+	while (str[i] != '\n' && str[i] != '\0')
+	{
+		line[i] = str[i];
+		i++;
+	}
+	line[i] = '\0';
 }
 
 char	*reading_file (int fd, char *str)
