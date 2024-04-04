@@ -69,7 +69,26 @@ static	char	*ft_strchr(const char *s, int c)
 
 char	*cleanline (char *str)
 {
+	char	*strnew;
+	int		i;
+	int		j;
 
+	if (str == NULL)
+		return (NULL);
+	i = 0;
+	while (str[i] != '\n' && str[i] != '\0')
+		i++;
+	j = i;
+	while(str[i] != '\0')
+		i++;
+	strnew = (char *)malloc(sizeof(char) * (i - j + 1));
+	if (strnew == NULL)
+		return (NULL);
+	i = 0;
+	while (str[j] != '\0')
+		strnew[i++] = str[j++];
+	free(str);
+	return(strnew);
 }
 
 char	*look_line	(char *str)
@@ -92,6 +111,7 @@ char	*look_line	(char *str)
 		i++;
 	}
 	line[i] = '\0';
+	return (line);
 }
 
 char	*reading_file (int fd, char *str)
@@ -126,12 +146,12 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <=0)
     	return (NULL);
-	if (ft_strlen(str) == 0)
+	
 		str = reading_file(fd, str);
-	else
-		line = look_line(str);
 	if (str == NULL)
-		retrun (NULL);
+		retrun (NULL);	
+	line = look_line(str);
+	str = cleanline(str);
 	return (line);
 }
 
