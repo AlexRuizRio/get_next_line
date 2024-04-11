@@ -11,63 +11,15 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#define BUFFER_SIZE 5
 
-static	size_t	ft_strlen(const char *s)
+char	*ft_free(char **str)
 {
-	int	count;
-
-	count = 0;
-	while (s[count] != '\0')
-	{
-		count++;
-	}
-	return (count);
-}
-
-static	char	*ft_strjoin(char const *s1, char const *s2)
-{
-	char	*str;
-	size_t	i;
-	size_t	len;
-
-	if (s1 == NULL || s2 == NULL)
-		return (NULL);
-	len = ft_strlen(s1)+ ft_strlen(s2);
-	str = ft_calloc((len + 1), sizeof(char));
-	if (!str)
-		return (0);
-	i = 0;
-	while (s1[i] != '\0')
-	{
-		str[i] = s1[i];
-		i++;
-	}
-	len = 0;
-	while (s2[len] != '\0')
-	{
-		str[i] = s2[len];
-		i++;
-		len++;
-	}
-	str[i] = '\0';
-	return (str);
-}
-
-static	char	*ft_strchr(const char *s, int c)
-{
-	while (*s != '\0')
-	{
-		if (*s == (char)c)
-			return ((char *)s);
-		s++;
-	}
-	if ((char)c == '\0')
-		return ((char *)s);
+	free(*str);
+	*str = NULL;
 	return (NULL);
 }
 
-char	*cleanline (char *str)
+char	*ft_cleanline (char *str)
 {
 	char	*strnew;
 	int		i;
@@ -91,7 +43,7 @@ char	*cleanline (char *str)
 	return(strnew);
 }
 
-char	*look_line	(char *str)
+char	*ft_look_line	(char *str)
 {
 	char	*line;
 	int		i;
@@ -114,15 +66,15 @@ char	*look_line	(char *str)
 	return (line);
 }
 
-char	*reading_file (int fd, char *str)
+char	*ft_reading_file (int fd, char *str)
 {
 	char	*buffer;
 	size_t 	bytes_read;
-	int		i;
 
 	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if(buffer == NULL)
-		return (NULL);
+		return (ft_free(&str));
+		//PENDIENTE DE ACTUALIZAR
 	bytes_read = 1;
 	while (!(ft_strchr(buffer, '\n')) && bytes_read != 0)
 	{
@@ -146,26 +98,11 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <=0)
     	return (NULL);
-	
+	if((str && !ft_strchr(str, '\n')) || !str)
 		str = reading_file(fd, str);
 	if (str == NULL)
 		retrun (NULL);	
 	line = look_line(str);
 	str = cleanline(str);
 	return (line);
-}
-
-int main (void)
-{
-	char	*line;
-	int fd = open("test1.txt", O_RDONLY);
-	if (fd == -1)
-	{
-		printf ("Error al abrir el archivo");
-		retutn (-1);
-	}
-	while ((line = get_next_line(fd)) )
-
-
-	return (0);
 }
