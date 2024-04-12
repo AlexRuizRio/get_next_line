@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alruiz-d <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: alruiz-d <alruiz-d@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 17:41:18 by alruiz-d          #+#    #+#             */
 /*   Updated: 2024/04/03 17:41:23 by alruiz-d         ###   ########.fr       */
@@ -19,90 +19,82 @@ char	*ft_free(char **str)
 	return (NULL);
 }
 
-char	*ft_cleanline (char *str)
+char	*ft_cleanline(char *str)
 {
 	char	*strnew;
-	int		i;
-	int		j;
+	char	*temchr;
+	int		len;
 
-	if (str == NULL)
+	temchr = ft_strchr(str, '\n');
+	if (!temchr)
+	{
+		strnew = NULL;
+		return (ft_free(&str));
+	}
+	else
+		len = (temchr - str) + 1;
+	if (!str[len])
+		return (ft_free(&str));
+	strnew = ft_substr(str, len, ft_strlen(str) - len);
+	if (!strnew)
 		return (NULL);
-	i = 0;
-	while (str[i] != '\n' && str[i] != '\0')
-		i++;
-	j = i;
-	while(str[i] != '\0')
-		i++;
-	strnew = (char *)malloc(sizeof(char) * (i - j + 1));
-	if (strnew == NULL)
-		return (NULL);
-	i = 0;
-	while (str[j] != '\0')
-		strnew[i++] = str[j++];
-	free(str);
-	return(strnew);
+	ft_free(&str);
+	return (strnew);
 }
 
-char	*ft_look_line	(char *str)
+char	*ft_look_line(char *str)
 {
 	char	*line;
-	int		i;
+	char	*temchr;
+	int		len;
 
-	if (str == NULL)
+	temchr = ft_strchr(str, '\n');
+	len = (temchr - str) + 1;
+	line = ft_substr(str, 0, len);
+	if (!line)
 		return (NULL);
-	i = 0;
-	while (str[i] != '\n' && str[i] != '\0')
-		i++;
-	line = (char *)malloc(sizeof(char) * (i + 1));
-	if (line == NULL)
-		return (NULL);
-	i = 0;
-	while (str[i] != '\n' && str[i] != '\0')
-	{
-		line[i] = str[i];
-		i++;
-	}
-	line[i] = '\0';
 	return (line);
 }
 
-char	*ft_reading_file (int fd, char *str)
+char	*ft_reading_file(int fd, char *str)
 {
 	char	*buffer;
-	size_t 	bytes_read;
+	int		bytes_read;
 
 	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if(buffer == NULL)
+	if (!buffer)
 		return (ft_free(&str));
-		//PENDIENTE DE ACTUALIZAR
 	bytes_read = 1;
-	while (!(ft_strchr(buffer, '\n')) && bytes_read != 0)
+	buffer[0] = '\0';
+	while (!ft_strchr(buffer, '\n') && bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read == -1)
+		if (bytes_read > 0)
 		{
-			free(buffer);
-			return (NULL);
+			buffer[bytes_read] = '\0';
+			str = ft_strjoin(str, buffer);
 		}
-		buffer[bytes_read] = '\0';
-		str = ft_strjoin (str, buffer);
 	}
 	free(buffer);
+	if (bytes_read == -1)
+		return (ft_free(&str));
 	return (str);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	*str;
-	char	*line;
+	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <=0)
-    	return (NULL);
-	if((str && !ft_strchr(str, '\n')) || !str)
-		str = reading_file(fd, str);
-	if (str == NULL)
-		retrun (NULL);	
-	line = look_line(str);
-	str = cleanline(str);
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	if ((str && !ft_strchr(str, '\n')) || !str)
+		str = ft_reading_file(fd, str);
+	if (!str)
+		return (NULL);
+	line = ft_look_line(str);
+	if (!line)
+		return (ft_free(&str));
+	str = ft_cleanline(str);
 	return (line);
 }
